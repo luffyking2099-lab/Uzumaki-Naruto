@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Family Guardian (Child)</string>
+    <string name="accessibility_service_description">
+        Lets your family\'s dashboard apply the app time rules a parent has set. It only
+        checks which app is open on screen — it cannot read messages, photos, passwords,
+        or anything you type.
+    </string>
+</resources>
