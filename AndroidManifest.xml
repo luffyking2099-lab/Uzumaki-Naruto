@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Screen time + app usage -->
+    <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS"
+        tools:ignore="ProtectedPermissions" xmlns:tools="http://schemas.android.com/tools"/>
+
+    <!-- Location -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
+
+    <!-- Foreground services (each shows a persistent notification while active) -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+
+    <application
+        android:label="Family Guardian (Child)"
+        android:icon="@mipmap/ic_launcher"
+        android:allowBackup="false">
+
+        <activity android:name=".ui.MainActivity" android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+
+        <!-- Consent screen shown before screen-cast starts; required every session, not just once. -->
+        <activity android:name=".ui.ScreenCastConsentActivity" android:exported="false"/>
+
+        <!-- App-blocking: Accessibility Service. Child must enable this manually in Settings,
+             which is itself a visible, deliberate step (Android does not allow silent enablement). -->
+        <service android:name=".service.AppBlockerAccessibilityService"
+            android:exported="false"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService"/>
+            </intent-filter>
+            <meta-data android:name="android.accessibilityservice"
+                android:resource="@xml/accessibility_service_config"/>
+        </service>
+
+        <!-- Location: foreground service with a permanent notification icon while tracking. -->
+        <service android:name=".service.LocationUpdateService"
+            android:exported="false"
+            android:foregroundServiceType="location"/>
+
+        <!-- Screen time counter, runs periodically via WorkManager, no foreground UI needed. -->
+        <service android:name=".service.ScreenTimeWorker" android:exported="false"/>
+
+        <!-- Screen cast: ONLY starts after MediaProjection's system consent dialog is accepted
+             for THIS session, and shows Android's built-in screen-share indicator the whole time. -->
+        <service android:name=".service.ScreenCastService"
+            android:exported="false"
+            android:foregroundServiceType="mediaProjection"/>
+
+    </application>
+</manifest>
